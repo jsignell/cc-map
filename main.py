@@ -87,7 +87,7 @@ def create_map_from_csv():
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
 
     # Add map features for context and aesthetic appeal
-    ax.set_title('Community Colleges of Massachusetts', fontsize=16)
+    ax.set_title('Massachusetts Community Colleges', fontsize=16)
     ax.add_feature(cfeature.COASTLINE)
     ax.add_feature(cfeature.STATES, linestyle='-', edgecolor='gray')
     ax.add_feature(cfeature.BORDERS, linestyle=':')
@@ -123,7 +123,7 @@ def create_map_from_csv():
     min_lon, max_lon = df['longitude'].min(), df['longitude'].max()
     min_lat, max_lat = df['latitude'].min(), df['latitude'].max()
     buffer = 1.5 # Degrees buffer
-    ax.set_extent([min_lon - buffer, max_lon + buffer, min_lat - 2.5, max_lat + buffer],
+    ax.set_extent([min_lon - .3, max_lon + .5, min_lat - 1.7, max_lat + 0.3],
                   crs=ccrs.PlateCarree())
 
        # Create the legend and place it at the bottom right
