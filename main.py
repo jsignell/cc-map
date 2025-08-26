@@ -9,6 +9,8 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from pathlib import Path
 import time
+import geopandas as gpd
+
 
 INPUT_FILE = "data.csv"
 GEOCODED_FILE = "geocoded.csv"
@@ -81,24 +83,17 @@ def create_map_from_csv():
         print("No valid addresses to plot. Exiting.")
         return
 
-    # --- 3. Create the map using Cartopy and Matplotlib ---
-    fig = plt.figure(figsize=(10, 8))
+    # Create the map using Cartopy and Matplotlib
+    fig = plt.figure(figsize=(10, 12))
     # Use PlateCarree projection for a simple, rectangular map
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+    
+    # Add the outline of MA
+    gdf = gpd.read_file("MA.geojson")
+    gdf.plot(ax=ax, transform=ccrs.PlateCarree(), color="white", edgecolor='black')
 
     # Add map features for context and aesthetic appeal
     ax.set_title('Massachusetts Community Colleges', fontsize=16)
-    ax.add_feature(cfeature.COASTLINE)
-    ax.add_feature(cfeature.STATES, linestyle='-', edgecolor='gray')
-    ax.add_feature(cfeature.BORDERS, linestyle=':')
-
-    # Make the ocean blue and stuff
-    # ax.add_feature(cfeature.OCEAN, color='#ADD8E6')
-    # ax.add_feature(cfeature.LAND, color='#F5F5DC')
-    # ax.add_feature(cfeature.LAKES, color='#ADD8E6')
-    # ax.add_feature(cfeature.RIVERS)
-
-    # Plot the geocoded points
 
     # A list of colors for each point
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan', 'magenta', 'lime',
@@ -113,21 +108,13 @@ def create_map_from_csv():
                    color=color, marker='o', s=70,
                    label=row['inst_name'])
 
-
     # Add labels to the points (optional)
     # for index, row in df.iterrows():
     #     ax.text(row['longitude'] + 0.5, row['latitude'], row['address'].split(',')[0],
     #             transform=ccrs.PlateCarree(), fontsize=8, ha='left')
 
-    # Set the map extent to fit all the points with a buffer
-    min_lon, max_lon = df['longitude'].min(), df['longitude'].max()
-    min_lat, max_lat = df['latitude'].min(), df['latitude'].max()
-    buffer = 1.5 # Degrees buffer
-    ax.set_extent([min_lon - .3, max_lon + .5, min_lat - 1.7, max_lat + 0.3],
-                  crs=ccrs.PlateCarree())
-
-       # Create the legend and place it at the bottom right
-    ax.legend(loc='lower left', ncol=2)
+    # Create the legend and place it at the bottom right
+    ax.legend(bbox_to_anchor=(0.015, -0.45), loc='lower left', ncol=2, fontsize=11)
     fig.savefig('address_map.png', dpi=300)
     print("Map saved as 'address_map.png'")
 
